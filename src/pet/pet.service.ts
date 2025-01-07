@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Pet } from './pet.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreatePetInput } from './dto/create-pet.input';
 
 @Injectable()
 export class PetService {
+    constructor(@InjectRepository(Pet) private petRepository: Repository<Pet>){}
 
+    createPet(createPetInput: CreatePetInput): Promise<Pet>{
+        const newPet = this.petRepository.create(createPetInput)
+        return this.petRepository.save(newPet)
+    }
     async findAll(): Promise<Pet[]>{
-        const pet = new Pet;
-        pet.id = 1;
-        pet.name = 'muna';
-
-        return [pet]
+        return this.petRepository.find()
     }
 }
